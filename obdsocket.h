@@ -8,8 +8,13 @@ class OBDSocket : public QTcpSocket
 public:
     explicit OBDSocket(QObject *parent = 0);
 
+signals:
+    void powerRead(double power);
+
 private:
-    QByteArray buffer;
+    bool obdReady = false;
+
+    bool send(const QString& data);
 
 };
 

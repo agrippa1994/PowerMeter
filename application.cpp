@@ -2,28 +2,27 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QTimer>
+#include <QQmlContext>
 
-Application::Application(QObject *parent) : QObject(parent)
+Application::Application(QObject *parent)
+    : QObject(parent)
 {
+    // Load Engine
+    qmlRegisterType<Application>("OBDApplication", 1, 0, "OBDApplication");
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    setLabel("Verbunden");
-    setLabelColor("green");
-    setPowerValue(100);
 
-    QTimer *timer = new QTimer(this);
-    QObject::connect(timer, &QTimer::timeout, [&]() {
-        setPowerValue(rand() % 130);
-    });
+    engine.rootContext()->setContextProperty("application", this);
 
-    timer->start(250);
-    QObject::connect(&socket, &QTcpSocket::readyRead, [&]() {
-
+    QObject::connect(&socket, &OBDSocket::powerRead, [&](double power) {
+        setPowerValue(power);
     });
 
     QObject::connect(&socket, &QTcpSocket::stateChanged, [&](QAbstractSocket::SocketState state) {
+        bool shouldReconnect = false;
         switch(state)
         {
         case QAbstractSocket::UnconnectedState:
+            shouldReconnect = true;
             setLabelColor("red");
             setLabel("Unverbunden");
             break;
@@ -44,16 +43,30 @@ Application::Application(QObject *parent) : QObject(parent)
             setLabel("Schließt ...");
             break;
         default:
+            shouldReconnect = true;
             setLabelColor("red");
             setLabel("Unbekannt");
             break;
         }
+
+        if(shouldReconnect) {
+            reconnect();
+        }
     });
 
-    socket.connectToHost("192.168.0.100", 35000);
+    reconnect();
 }
 
-void Application::setPowerValue(int value)
+void Application::reconnect()
+{
+    if(socket.state() != OBDSocket::UnconnectedState) {
+        socket.abort();
+    }
+
+    socket.connectToHost("192.168.0.10", 30000);
+}
+
+void Application::setPowerValue(double value)
 {
     setProperty("gaugeValue", value);
 }

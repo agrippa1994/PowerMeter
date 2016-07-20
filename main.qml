@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
+import OBDApplication 1.0
 
 Window {
     color: "black"
@@ -15,11 +16,12 @@ Window {
     property alias labelText: label.text
     property alias labelColor: label.color
 
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         onClicked: {
-            Qt.quit();
+            application.reconnect()
         }
     }
 
@@ -44,7 +46,7 @@ Window {
 
         Behavior on value {
             NumberAnimation {
-                duration: 500
+                duration: 50
             }
         }
     }

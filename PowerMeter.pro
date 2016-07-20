@@ -5,10 +5,7 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     application.cpp \
-    obdsocket.cpp \
-    obddatahandler.cpp \
-    obdrequest.cpp \
-    obdpid.cpp
+    obdsocket.cpp
 
 RESOURCES += qml.qrc
 
@@ -20,8 +17,4 @@ include(deployment.pri)
 
 HEADERS += \
     application.h \
-    obdsocket.h \
-    obddatahandler.h \
-    obdrequest.h \
-    obd.h \
-    obdpid.h
+    obdsocket.h

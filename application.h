@@ -11,7 +11,9 @@ class Application : public QObject
 public:
     explicit Application(QObject *parent = 0);
 
-    void setPowerValue(int value);
+    Q_INVOKABLE void reconnect();
+
+    void setPowerValue(double value);
     void setLabel(const QString& text);
 
     void setLabelColor(const QString& color);
