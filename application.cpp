@@ -63,7 +63,7 @@ void Application::reconnect()
         socket.abort();
     }
 
-    socket.connectToHost("192.168.0.10", 30000);
+    socket.connectToHost("192.168.0.10", 35000);
 }
 
 void Application::setPowerValue(double value)

@@ -8,11 +8,13 @@ OBDSocket::OBDSocket(QObject *parent)
 
     QObject::connect(this, &QTcpSocket::stateChanged, [&](QTcpSocket::SocketState state) {
         if(state == QTcpSocket::ConnectedState) {
-            write("AT Z\r");
+            qDebug() << "Write " << write("AT Z\r");
         }
     });
     QObject::connect(this, &QTcpSocket::readyRead, [&]() {
-        QList<QByteArray> data = readAll().split('\r');
+        QList<QString> data = QString(readAll()).split("\r\n", QString::SkipEmptyParts);
+        //QList<QByteArray> data = readAll().split('\r\n');
+        qDebug() << "Read: " << data;
         if(data.size() == 0)
             return;
 
@@ -20,12 +22,10 @@ OBDSocket::OBDSocket(QObject *parent)
             obdReady = true;
 
         // Read lines
-        for(const QByteArray& line : data) {
+        for(const QString& line : data) {
             std::vector<int> bytes;
-            QList<QByteArray> tokens = line.split(' ');
-
             // Parse bytes
-            for(QByteArray token : line.split(' ')) {
+            for(QString token : line.split(' ')) {
                 bool ok = false;
                 int parsed = token.toInt(&ok, 16);
                 if(ok)
