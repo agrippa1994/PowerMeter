@@ -76,6 +76,11 @@ void Application::setLabel(const QString &text)
     setProperty("labelText", text);
 }
 
+void Application::setAnimationDuration(int duration)
+{
+    setProperty("animationDuration", duration);
+}
+
 void Application::setLabelColor(const QString &color)
 {
     setProperty("labelColor", color);

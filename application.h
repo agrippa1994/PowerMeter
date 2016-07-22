@@ -15,7 +15,7 @@ public:
 
     void setPowerValue(double value);
     void setLabel(const QString& text);
-
+    void setAnimationDuration(int duration);
     void setLabelColor(const QString& color);
     void setProperty(const char *name, const QVariant &value);
 

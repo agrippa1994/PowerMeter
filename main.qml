@@ -15,7 +15,7 @@ Window {
     property alias gaugeValue: gauge.value
     property alias labelText: label.text
     property alias labelColor: label.color
-
+    property alias animationDuration: animation.duration
 
     MouseArea {
         id: mouseArea
@@ -44,9 +44,22 @@ Window {
         minimumValue: 0
         antialiasing: true
 
+        style: CircularGaugeStyle {
+            id: style
+            minimumValueAngle: -90
+            maximumValueAngle: 180
+            tickmarkLabel: Text {
+                font.pixelSize: Math.max(6, outerRadius * 0.1)
+                text: styleData.value
+                antialiasing: true
+                color: styleData.value >= 130 ? "#e34c22" : "#e5e5e5"
+            }
+        }
+
         Behavior on value {
             NumberAnimation {
-                duration: 50
+                id: animation
+                duration: 500
             }
         }
     }
