@@ -1,4 +1,5 @@
 #include "application.h"
+#include "logger.h"
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QTimer>
@@ -12,6 +13,10 @@ Application::Application(QObject *parent)
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     engine.rootContext()->setContextProperty("application", this);
+
+    QObject::connect(&Logger::sharedLogger(), &Logger::messageLogged, [&]() {
+        setProperty("logText", Logger::sharedLogger().getBuffer());
+    });
 
     QObject::connect(&socket, &OBDSocket::powerRead, [&](double power) {
         setPowerValue(power);
@@ -63,7 +68,9 @@ void Application::reconnect()
         socket.abort();
     }
 
+    //socket.connectToHost("127.0.0.1", 8000);
     socket.connectToHost("192.168.0.10", 35000);
+    qDebug() << "Trying to connect to OBD server ...";
 }
 
 void Application::setPowerValue(double value)

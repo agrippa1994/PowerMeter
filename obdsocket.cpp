@@ -63,8 +63,10 @@ OBDSocket::OBDSocket(QObject *parent)
 
 bool OBDSocket::send(const QString &data)
 {
-    if(obdReady)
+    if(obdReady) {
         return write((data + "\r").toStdString().c_str()) > 0;
+        obdReady = false;
+    }
 
     return false;
 }

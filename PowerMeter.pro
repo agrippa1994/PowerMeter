@@ -5,7 +5,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     application.cpp \
-    obdsocket.cpp
+    obdsocket.cpp \
+    logger.cpp
 
 RESOURCES += qml.qrc
 
@@ -17,4 +18,5 @@ include(deployment.pri)
 
 HEADERS += \
     application.h \
-    obdsocket.h
+    obdsocket.h \
+    logger.h
