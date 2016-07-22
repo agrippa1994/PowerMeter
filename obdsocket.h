@@ -1,6 +1,7 @@
 #ifndef OBDSOCKET_H
 #define OBDSOCKET_H
 #include <QTcpSocket>
+#include <QString>
 
 class OBDSocket : public QTcpSocket
 {
@@ -10,6 +11,7 @@ public:
 
 signals:
     void powerRead(double power);
+    void stringRead(const QString& text);
 
 private:
     bool obdReady = false;
