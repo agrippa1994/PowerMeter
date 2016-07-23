@@ -63,7 +63,7 @@ OBDSocket::OBDSocket(QObject *parent)
                             emit throttleRead((double)bytes[2] * (100.0/255.0));
                         }
                         if(bytes[1] == 0x0D) { // Speed
-                            emit speedRead((double)bytes[2]);
+                            emit speedRead((double)bytes[2] * 1.05);
                         }
                     }
                 }
