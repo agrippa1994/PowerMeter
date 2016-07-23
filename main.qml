@@ -3,7 +3,9 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Extras 1.4
+import QtQuick.Layouts 1.3
 import OBDApplication 1.0
+import "./"
 
 Window {
     visible: true
@@ -12,55 +14,71 @@ Window {
     title: qsTr("Power Meter")
     color: "black"
 
-    property alias gaugeValue: gauge.value
-    property alias labelText: label.text
-    property alias labelColor: label.color
-    property alias animationDuration: animation.duration
+    property alias gaugeValue: powerGauge.value
+    property alias labelText: powerGauge.text
+    property alias labelColor: powerGauge.color
+
+    property alias throttleValue: throttleGauge.value
+    property alias speedValue: speedGauge.value
+    property bool menuVisible: false
 
     MouseArea {
-        id: mouseArea
         anchors.fill: parent
-        onClicked: application.reconnect();
-    }
+        onClicked: menuVisible = true
+        visible: !menuVisible
 
-    Text {
-        id: label
-        color: "white"
-        anchors.bottom: mouseArea.bottom
-        anchors.bottomMargin: 10
-        anchors.left: mouseArea.left
-        anchors.leftMargin: 10
-        font.pixelSize: mouseArea.height / 15
-    }
+        Row {
+            anchors.fill: parent
+            spacing: 5
 
-    CircularGauge {
-        id: gauge
-        anchors.fill: parent
-        anchors.bottomMargin: mouseArea.height / 15
-        anchors.topMargin: 10
-        maximumValue: 140
-        minimumValue: 0
-        antialiasing: true
+            Gauge {
+                id: throttleGauge
+                height: parent.height
+                value: 100
+                Behavior on value {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
+            }
 
-        style: CircularGaugeStyle {
-            id: style
-            minimumValueAngle: -90
-            maximumValueAngle: 180
-            tickmarkLabel: Text {
-                font.pixelSize: Math.max(6, outerRadius * 0.1)
-                text: styleData.value
-                antialiasing: true
-                color: styleData.value >= 120 ? "#e34c22" : "#e5e5e5"
+            GaugeView {
+                id: powerGauge
+                height: parent.height
+                width: parent.width / 2 - throttleGauge.width / 2 - parent.spacing
+                onValueChanged: function() {
+                    if(powerGauge.value > 130)
+                        powerGauge.color = "red";
+                    else if(powerGauge.value > 100)
+                        powerGauge.color = "yellow"
+                    else
+                        powerGauge.color = "white";
+
+                    powerGauge.text = value.toFixed(0).toString() + " PS"
+                }
+            }
+
+            GaugeView {
+                id: speedGauge
+                height: parent.height
+                width: parent.width / 2 - throttleGauge.width / 2 - parent.spacing
+                maximum: 200
+                onValueChanged: function() {
+                    if(speedGauge.value > 130)
+                        speedGauge.color = "red";
+                    else if(speedGauge.value > 100)
+                        speedGauge.color = "yellow"
+                    else
+                        speedGauge.color = "white";
+
+                    speedGauge.text = value.toFixed(0).toString() + " km/h"
+                }
             }
         }
+    }
 
-        onValueChanged: label.text = value.toFixed(0).toString() + " PS"
-
-        Behavior on value {
-            NumberAnimation {
-                id: animation
-                duration: 500
-            }
-        }
+    MainMenu {
+        id: menu
+        visible: menuVisible
     }
 }

@@ -10,11 +10,14 @@ public:
 
 signals:
     void powerRead(double power);
+    void throttleRead(double throttle);
+    void speedRead(double speed);
     void stringRead(const QString& text);
 
 private:
-    bool obdReady = false;
+    int nextRequest = 0x10;
 
+    bool obdReady = false;
     bool send(const QString& data);
 
 };

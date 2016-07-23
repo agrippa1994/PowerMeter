@@ -21,6 +21,15 @@ Application::Application(QObject *parent)
         setPowerValue(power);
     });
 
+    QObject::connect(&socket, &OBDSocket::throttleRead, [&](double throttle) {
+        qDebug() << "Throttle: " << throttle;
+        setThrottleValue(throttle);
+    });
+
+    QObject::connect(&socket, &OBDSocket::speedRead, [&](double speed) {
+        setSpeedValue(speed);
+    });
+
     QObject::connect(&socket, &QTcpSocket::stateChanged, [&](QAbstractSocket::SocketState state) {
         bool shouldReconnect = false;
         switch(state)
@@ -67,7 +76,7 @@ void Application::reconnect()
         socket.abort();
     }
 
-    //socket.connectToHost("127.0.0.1", 8000);
+    //socket.connectToHost("192.168.56.101", 35000);
     socket.connectToHost("192.168.0.10", 35000);
     qDebug() << "Trying to connect to OBD server ...";
 }
@@ -90,6 +99,16 @@ void Application::setAnimationDuration(int duration)
 void Application::setLabelColor(const QString &color)
 {
     setProperty("labelColor", color);
+}
+
+void Application::setThrottleValue(double value)
+{
+    setProperty("throttleValue", value);
+}
+
+void Application::setSpeedValue(double value)
+{
+    setProperty("speedValue", value);
 }
 
 void Application::setProperty(const char *name, const QVariant &value)
