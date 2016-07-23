@@ -1,7 +1,6 @@
 #ifndef OBDSOCKET_H
 #define OBDSOCKET_H
 #include <QTcpSocket>
-#include <QString>
 
 class OBDSocket : public QTcpSocket
 {

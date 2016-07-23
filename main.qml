@@ -10,89 +10,56 @@ Window {
     width: 640
     height: 480
     title: qsTr("Power Meter")
+    color: "black"
 
     property alias gaugeValue: gauge.value
     property alias labelText: label.text
     property alias labelColor: label.color
     property alias animationDuration: animation.duration
-    property alias logText: textArea.text
 
-    StackView {
-
-        id: stackView
-        initialItem: mainView
+    MouseArea {
+        id: mouseArea
         anchors.fill: parent
+        onClicked: application.reconnect();
+    }
 
-        Rectangle {
-            id: logView
+    Text {
+        id: label
+        color: "white"
+        anchors.bottom: mouseArea.bottom
+        anchors.bottomMargin: 10
+        anchors.left: mouseArea.left
+        anchors.leftMargin: 10
+        font.pixelSize: mouseArea.height / 15
+    }
 
-            Button {
-                width: parent.width
-                id: backButton
-                text: "<"
-                onClicked: stackView.pop()
-            }
+    CircularGauge {
+        id: gauge
+        anchors.fill: parent
+        anchors.bottomMargin: mouseArea.height / 15
+        anchors.topMargin: 10
+        maximumValue: 140
+        minimumValue: 0
+        antialiasing: true
 
-            TextArea {
-                id: textArea
-                anchors.bottom: parent.bottom
-                anchors.top: backButton.bottom
-                anchors.left: parent.left
-                width: parent.width
-                readOnly: true
-                onTextChanged: function() {
-                    __verticalScrollBar.value = __verticalScrollBar.maximumValue
-                }
+        style: CircularGaugeStyle {
+            id: style
+            minimumValueAngle: -90
+            maximumValueAngle: 180
+            tickmarkLabel: Text {
+                font.pixelSize: Math.max(6, outerRadius * 0.1)
+                text: styleData.value
+                antialiasing: true
+                color: styleData.value >= 120 ? "#e34c22" : "#e5e5e5"
             }
         }
 
-        Rectangle {
-            id: mainView
-            color: "black"
+        onValueChanged: label.text = value.toFixed(0).toString() + " PS"
 
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                onClicked: stackView.push(logView)
-            }
-
-            Text {
-                id: label
-                color: "white"
-                anchors.bottom: mouseArea.bottom
-                anchors.bottomMargin: 10
-                anchors.left: mouseArea.left
-                anchors.leftMargin: 10
-                font.pixelSize: mouseArea.height / 15
-            }
-
-            CircularGauge {
-                id: gauge
-                anchors.fill: parent
-                anchors.bottomMargin: mouseArea.height / 15
-                anchors.topMargin: 10
-                maximumValue: 140
-                minimumValue: 0
-                antialiasing: true
-
-                style: CircularGaugeStyle {
-                    id: style
-                    minimumValueAngle: -90
-                    maximumValueAngle: 180
-                    tickmarkLabel: Text {
-                        font.pixelSize: Math.max(6, outerRadius * 0.1)
-                        text: styleData.value
-                        antialiasing: true
-                        color: styleData.value >= 130 ? "#e34c22" : "#e5e5e5"
-                    }
-                }
-
-                Behavior on value {
-                    NumberAnimation {
-                        id: animation
-                        duration: 500
-                    }
-                }
+        Behavior on value {
+            NumberAnimation {
+                id: animation
+                duration: 500
             }
         }
     }

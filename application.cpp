@@ -1,5 +1,4 @@
 #include "application.h"
-#include "logger.h"
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QTimer>
@@ -14,8 +13,8 @@ Application::Application(QObject *parent)
 
     engine.rootContext()->setContextProperty("application", this);
 
-    QObject::connect(&Logger::sharedLogger(), &Logger::messageLogged, [&]() {
-        setProperty("logText", Logger::sharedLogger().getBuffer());
+    QObject::connect(&socket, &OBDSocket::stringRead, [&](const QString& text) {
+        setLabel(text);
     });
 
     QObject::connect(&socket, &OBDSocket::powerRead, [&](double power) {

@@ -24,48 +24,51 @@ OBDSocket::OBDSocket(QObject *parent)
 
         if(data.contains(">")) {
             obdReady = true;
-            QTimer::singleShot(10, [=]() {
-                // Read lines
-                for(const QString& line : data) {
-                    std::vector<int> bytes;
+        }
 
-                    // Parse bytes
-                    for(QString token : line.split(' ')) {
-                        bool ok = false;
-                        int parsed = token.toInt(&ok, 16);
-                        if(ok) {
-                            bytes.push_back(parsed);
-                        }
-                        else {
-                            emit stringRead(line);
-                            break;
-                        }
+        QTimer::singleShot(5, [=]() {
+            // Read lines
+            for(const QString& line : data) {
+                std::vector<int> bytes;
+
+                // Parse bytes
+                for(QString token : line.split(' ', QString::SkipEmptyParts)) {
+                    bool ok = false;
+                    int parsed = token.toInt(&ok, 16);
+                    if(ok) {
+                        bytes.push_back(parsed);
                     }
-
-                    qDebug() << "Read Bytes: " << bytes;
-                    // Calculate MAF and HP
-                    if(bytes.size() == 4) {
-                        if(bytes[0] == 0x41 && bytes[1] == 0x10) {
-                            double maf = (double)(256.0 * bytes[2] + bytes[3]) / 4.0;
-                            qDebug() << "Read MAF: " << maf;
-                            double hp = maf / 15.2 * 46.0 * 0.33 * 1.34;
-                            emit powerRead(hp);
-                        }
+                    else {
+                        if(line != ">" && line.length() > 0)
+                            emit stringRead(line);
+                        break;
                     }
                 }
 
-                // Request MAF again
-                send("01 10 1");
-            });
-        }
+                qDebug() << "Read Bytes: " << bytes;
+                // Calculate MAF and HP
+                if(bytes.size() == 4) {
+                    if(bytes[0] == 0x41 && bytes[1] == 0x10) {
+                        double maf = (double)(256.0 * bytes[2] + bytes[3]) / 100.0;
+                        qDebug() << "Read MAF: " << maf;
+                        double hp = maf / 15.2 * 46.0 * 0.33 * 1.34;
+                        emit powerRead(hp);
+                    }
+                }
+            }
+
+            // Request MAF again
+            send("01 10 1");
+        });
     });
+
 }
 
 bool OBDSocket::send(const QString &data)
 {
     if(obdReady) {
-        return write((data + "\r").toStdString().c_str()) > 0;
         obdReady = false;
+        return write((data + "\r").toStdString().c_str()) > 0;
     }
 
     return false;

@@ -2,7 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include "application.h"
-#include "logger.h"
 #include <QDebug>
 
 int main(int argc, char *argv[])
