@@ -16,16 +16,13 @@ Application::Application(QObject *parent)
     engine->rootContext()->setContextProperty("application", this);
 
     QObject::connect(socket, &OBDSocket::stringRead, [&](const QString& text) {
+        setLabelColor("orange");
         setLabel(text);
     });
 
     QObject::connect(socket, &OBDSocket::powerRead, [&](double power) {
+        setLabelColor("white");
         setPowerValue(power);
-    });
-
-    QObject::connect(socket, &OBDSocket::throttleRead, [&](double throttle) {
-        qDebug() << "Throttle: " << throttle;
-        setThrottleValue(throttle);
     });
 
     QObject::connect(socket, &OBDSocket::speedRead, [&](double speed) {
@@ -107,11 +104,6 @@ void Application::setAnimationDuration(int duration)
 void Application::setLabelColor(const QString &color)
 {
     setProperty("labelColor", color);
-}
-
-void Application::setThrottleValue(double value)
-{
-    setProperty("throttleValue", value);
 }
 
 void Application::setSpeedValue(double value)

@@ -10,7 +10,6 @@ public:
 
 signals:
     void powerRead(double power);
-    void throttleRead(double throttle);
     void speedRead(double speed);
     void stringRead(const QString& text);
 

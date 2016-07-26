@@ -3,6 +3,7 @@
         <file>main.qml</file>
         <file>GaugeView.qml</file>
         <file>MainMenu.qml</file>
-        <file>MainMenuButton.qml</file>
+        <file>img/background.png</file>
+        <file>img/delete.png</file>
     </qresource>
 </RCC>

@@ -18,7 +18,9 @@ Item {
         anchors.bottomMargin: 10
         anchors.left: parent.left
         anchors.leftMargin: 10
+        anchors.right: parent.right
         font.pixelSize: parent.height / 15
+        horizontalAlignment: Text.AlignHCenter
     }
 
     CircularGauge {
@@ -29,13 +31,6 @@ Item {
         maximumValue: 140
         minimumValue: 0
         antialiasing: true
-
-        style: CircularGaugeStyle {
-            id: style
-            minimumValueAngle: -90
-            maximumValueAngle: 180
-        }
-
         Behavior on value {
             NumberAnimation {
                 id: animation

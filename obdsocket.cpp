@@ -57,9 +57,6 @@ OBDSocket::OBDSocket(QObject *parent)
                         }
                     }
                     if(bytes.size() == 3) {
-                        if(bytes[1] == 0x11) { // Throttle
-                            emit throttleRead((double)bytes[2] * (100.0/255.0));
-                        }
                         if(bytes[1] == 0x0D) { // Speed
                             emit speedRead((double)bytes[2] * 1.05);
                         }
@@ -70,8 +67,7 @@ OBDSocket::OBDSocket(QObject *parent)
 
         // Request next value
         int req = nextRequest;
-        if(nextRequest == 0x10) req = 0x11;
-        if(nextRequest == 0x11) req = 0x0D;
+        if(nextRequest == 0x10) req = 0x0D;
         if(nextRequest == 0x0D) req = 0x10;
 
         if(send(QString().sprintf("01 %02X 1", nextRequest)))

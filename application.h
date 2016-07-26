@@ -15,7 +15,6 @@ public:
     void setLabel(const QString& text);
     void setAnimationDuration(int duration);
     void setLabelColor(const QString& color);
-    void setThrottleValue(double value);
     void setSpeedValue(double value);
     void setProperty(const char *name, const QVariant &value);
 
