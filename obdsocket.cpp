@@ -27,7 +27,7 @@ OBDSocket::OBDSocket(QObject *parent)
 
         // Read lines
         for(const QString& line : data) {
-            QList<int> bytes;
+            QVector<int> bytes;
             bytes.reserve(4); // Reserve space for 4 ints
 
             // Parse bytes
