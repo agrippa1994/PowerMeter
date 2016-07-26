@@ -12,7 +12,9 @@ Window {
     width: 640
     height: 480
     title: qsTr("Power Meter")
-    color: "black"
+
+
+
 
     property alias gaugeValue: powerGauge.value
     property alias labelText: powerGauge.text
@@ -22,10 +24,33 @@ Window {
     property alias speedValue: speedGauge.value
     property bool menuVisible: false
 
+    // Transition between views
+    Behavior on menuVisible {
+        ParallelAnimation {
+            NumberAnimation {
+                target: mainView
+                property: "opacity"
+                duration: 250
+                easing.type: Easing.InExpo
+                from: menuVisible? 0.0 : 1.0
+                to: menuVisible? 1.0 : 0.0
+            }
+
+            NumberAnimation {
+                target: menu
+                property: "opacity"
+                duration: 250
+                easing.type: Easing.InExpo
+                from: menuVisible? 1.0 : 0.0
+                to: menuVisible? 0.0 : 1.0
+            }
+        }
+    }
+
     MouseArea {
+        id: mainView
         anchors.fill: parent
         onClicked: menuVisible = true
-        visible: !menuVisible
 
         Row {
             anchors.fill: parent
@@ -79,6 +104,7 @@ Window {
 
     MainMenu {
         id: menu
+        anchors.fill: parent
         visible: menuVisible
     }
 }

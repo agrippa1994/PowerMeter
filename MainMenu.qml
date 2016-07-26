@@ -5,8 +5,6 @@ import QtQuick.Layouts 1.3
 
 GridView {
     id: menu
-    visible: menuVisible
-    anchors.centerIn: parent
 
     GridLayout {
         anchors.centerIn: parent
