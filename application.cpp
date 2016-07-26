@@ -1,57 +1,59 @@
 #include "application.h"
-#include <QQuickItem>
+#include "obdsocket.h"
 #include <QQuickWindow>
-#include <QTimer>
 #include <QQmlContext>
+#include <QQmlApplicationEngine>
 
 Application::Application(QObject *parent)
-    : QObject(parent)
+    : QObject(parent),
+      socket(new OBDSocket(this)),
+      engine(new QQmlApplicationEngine(this))
 {
     // Load Engine
     qmlRegisterType<Application>("OBDApplication", 1, 0, "OBDApplication");
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    engine.rootContext()->setContextProperty("application", this);
+    engine->rootContext()->setContextProperty("application", this);
 
-    QObject::connect(&socket, &OBDSocket::stringRead, [&](const QString& text) {
+    QObject::connect(socket, &OBDSocket::stringRead, [&](const QString& text) {
         setLabel(text);
     });
 
-    QObject::connect(&socket, &OBDSocket::powerRead, [&](double power) {
+    QObject::connect(socket, &OBDSocket::powerRead, [&](double power) {
         setPowerValue(power);
     });
 
-    QObject::connect(&socket, &OBDSocket::throttleRead, [&](double throttle) {
+    QObject::connect(socket, &OBDSocket::throttleRead, [&](double throttle) {
         qDebug() << "Throttle: " << throttle;
         setThrottleValue(throttle);
     });
 
-    QObject::connect(&socket, &OBDSocket::speedRead, [&](double speed) {
+    QObject::connect(socket, &OBDSocket::speedRead, [&](double speed) {
         setSpeedValue(speed);
     });
 
-    QObject::connect(&socket, &QTcpSocket::stateChanged, [&](QAbstractSocket::SocketState state) {
+    QObject::connect(socket, &OBDSocket::stateChanged, [&](OBDSocket::SocketState state) {
         bool shouldReconnect = false;
         switch(state)
         {
-        case QAbstractSocket::UnconnectedState:
+        case OBDSocket::UnconnectedState:
             shouldReconnect = true;
             setLabelColor("red");
             setLabel("Unverbunden");
             break;
-        case QAbstractSocket::HostLookupState:
+        case OBDSocket::HostLookupState:
             setLabelColor("yellow");
             setLabel("Auflösen ...");
             break;
-        case QAbstractSocket::ConnectingState:
+        case OBDSocket::ConnectingState:
             setLabelColor("yellow");
             setLabel("Verbinden ...");
             break;
-        case QAbstractSocket::ConnectedState:
+        case OBDSocket::ConnectedState:
             setLabelColor("green");
             setLabel("Verbunden");
             break;
-        case QAbstractSocket::ClosingState:
+        case OBDSocket::ClosingState:
             setLabelColor("red");
             setLabel("Schließt ...");
             break;
@@ -70,14 +72,20 @@ Application::Application(QObject *parent)
     reconnect();
 }
 
+Application::~Application()
+{
+    delete socket;
+    delete engine;
+}
+
 void Application::reconnect()
 {
-    if(socket.state() != OBDSocket::UnconnectedState) {
-        socket.abort();
+    if(socket->state() != OBDSocket::UnconnectedState) {
+        socket->abort();
     }
 
-    //socket.connectToHost("192.168.56.101", 35000);
-    socket.connectToHost("192.168.0.10", 35000);
+    socket->connectToHost("192.168.56.101", 35000);
+    //socket->connectToHost("192.168.0.10", 35000);
     qDebug() << "Trying to connect to OBD server ...";
 }
 
@@ -120,8 +128,8 @@ void Application::setProperty(const char *name, const QVariant &value)
 
 QQuickWindow *Application::getQuickWindow()
 {
-    if(engine.rootObjects().size() > 0)
-        return qobject_cast<QQuickWindow *>(engine.rootObjects()[0]);
+    if(engine->rootObjects().size() > 0)
+        return qobject_cast<QQuickWindow *>(engine->rootObjects()[0]);
 
     return 0;
 }

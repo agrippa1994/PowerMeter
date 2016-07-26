@@ -1,8 +1,5 @@
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QDebug>
 #include "application.h"
-#include <QDebug>
+#include <QGuiApplication>
 
 int main(int argc, char *argv[])
 {

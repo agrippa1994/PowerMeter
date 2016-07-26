@@ -1,15 +1,13 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
-#include "obdsocket.h"
-#include <QQuickItem>
-#include <QQmlApplicationEngine>
-#include <QTcpSocket>
+#include <QObject>
 
 class Application : public QObject
 {
     Q_OBJECT
 public:
     explicit Application(QObject *parent = 0);
+    ~Application();
 
     Q_INVOKABLE void reconnect();
 
@@ -21,11 +19,11 @@ public:
     void setSpeedValue(double value);
     void setProperty(const char *name, const QVariant &value);
 
-    QQuickWindow *getQuickWindow();
+    class QQuickWindow *getQuickWindow();
 
 private:
-    QQmlApplicationEngine engine;
-    OBDSocket socket;
+    class OBDSocket *socket;
+    class QQmlApplicationEngine *engine;
 };
 
 #endif // APPLICATION_H

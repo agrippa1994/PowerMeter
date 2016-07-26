@@ -1,11 +1,8 @@
 #include "obdsocket.h"
-#include <QList>
-#include <vector>
 
 OBDSocket::OBDSocket(QObject *parent)
     : QTcpSocket(parent)
 {
-
     QObject::connect(this, &QTcpSocket::stateChanged, [&](QTcpSocket::SocketState state) {
         if(state == QTcpSocket::ConnectedState) {
             obdReady = true;
@@ -30,14 +27,15 @@ OBDSocket::OBDSocket(QObject *parent)
 
         // Read lines
         for(const QString& line : data) {
-            std::vector<int> bytes;
+            QList<int> bytes;
+            bytes.reserve(4); // Reserve space for 4 ints
 
             // Parse bytes
             for(QString token : line.split(' ', QString::SkipEmptyParts)) {
                 bool ok = false;
                 int parsed = token.toInt(&ok, 16);
                 if(ok) {
-                    bytes.push_back(parsed);
+                    bytes << parsed; // Append parsed byte
                 }
                 else {
                     if(line != ">" && line.length() > 0)
@@ -78,9 +76,7 @@ OBDSocket::OBDSocket(QObject *parent)
 
         if(send(QString().sprintf("01 %02X 1", nextRequest)))
             nextRequest = req;
-
     });
-
 }
 
 bool OBDSocket::send(const QString &data)
