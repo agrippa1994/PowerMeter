@@ -81,8 +81,8 @@ void Application::reconnect()
         socket->abort();
     }
 
-    socket->connectToHost("192.168.56.101", 35000);
-    //socket->connectToHost("192.168.0.10", 35000);
+    //socket->connectToHost("192.168.56.101", 35000);
+    socket->connectToHost("192.168.0.10", 35000);
     qDebug() << "Trying to connect to OBD server ...";
 }
 
